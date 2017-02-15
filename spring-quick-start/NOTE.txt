@@ -1,0 +1,10 @@
+spring官网快速起步例子，介绍Ioc控制反转
+简单来说Ioc即在需要使用某个对象或实例的地方，并不是由代码自己创建产生，而是通过spring把需要的实例直接提供出来（注入进来）。
+例子中Messageprinter在打印时需要一个实例来提供打印的消息，在它构造方法中使用注解@Autowared注入了服务MessageService。
+而实际服务的创建则是在Application中使用@Bean注解来创建（实现MessageService接口）
+注解说明：
+Component注解：spring通用組件注解，对应具体分层的注解有@Repository 、@Service、@Controller
+Autowared注解，根据类型在上下文查找bean注入，推荐使用Resource
+@Configuration注解，spring配置类，初始化上下文
+@ComponentScan：开启注解扫描
+@Bean 实体bean，同配置文件bean
