@@ -15,7 +15,7 @@
         <!---->
         <set name="students" table="student" inverse="true" cascade="save-update">
             <key column="gid"></key>
-            <one-to-many class="com.github.siemen.model.Student"></one-to-many>
+            <one-to-many class="com.github.siemen.model.Student" ></one-to-many>
         </set>
 
     </class>
