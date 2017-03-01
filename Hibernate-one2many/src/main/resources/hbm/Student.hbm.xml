@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.github.siemen.model.Student" table="student" lazy="">
+        <id name="sid" column="sid" type="java.lang.Integer">
+            <generator class="increment"></generator>
+        </id>
+        <property name="sname" column="sname"/>
+        <property name="sex" column="sex"/>
+        <!---->
+        <many-to-one name="grade" class="com.github.siemen.model.Grade" column="gid" cascade="all"></many-to-one>
+
+    </class>
+</hibernate-mapping>

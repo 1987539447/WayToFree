@@ -1,0 +1,5 @@
+Hibernate基础框架
+核心配置hibernate.cfg.xml文件 ：数据源 sessionFactory
+实体映射文件XX.hbm.xml：
+class 实体类 table 映射表
+id 主键字段 gernarator 生成方式

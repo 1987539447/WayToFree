@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.github.siemen.model.Grade" table="grade">
+        <id name="gid" column="gid" type="java.lang.Integer">
+            <generator class="increment"></generator>
+        </id>
+        <property name="gname" type="java.lang.String">
+            <column name="gname" length="20" not-null="true"></column>
+        </property>
+        <property name="gdesc" column="gdesc" type="java.lang.String"/>
+        <!---->
+        <set name="students" table="student" inverse="true" cascade="save-update">
+            <key column="gid"></key>
+            <one-to-many class="com.github.siemen.model.Student" ></one-to-many>
+        </set>
+
+    </class>
+</hibernate-mapping>
