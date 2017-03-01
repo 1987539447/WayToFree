@@ -1,0 +1,11 @@
+通过spring创建restul webservcie
+http://localhost:8080/greeting?spring
+1.通过sprign提供的相关启动插件来启动服务
+2.模型对象Greeting，服务返回该对象的json值
+3.controller接收请求
+注解：
+@RestController 相当于Controller + Response,自动把领域对象转为json，并在响应体中返回
+@RequestMapping 请求地址映射，默认支持所有方法，可通过method=xx指定请求方式
+@RequestParam 请求参数，可指定name(默认参数名)，required（是否必须）defaultValue（默认值）
+spring通过MappingJackson2HttpMessageConverter转换Greeting对象为json
+@SpringBootApplication spring配置启动注解，自动加入@Configuration @EnableAutoConfiguration @EnableWebMvc @ComponentScan
