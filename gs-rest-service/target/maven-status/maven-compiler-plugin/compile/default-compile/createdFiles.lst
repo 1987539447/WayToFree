@@ -1,0 +1,3 @@
+com\github\siemen\model\Greeting.class
+com\github\siemen\controller\GreetingController.class
+com\github\siemen\Application.class
