@@ -11,6 +11,8 @@ import java.util.List;
  * 访问过程中发生缺页的次数是？
  *
  * 根据云栖 小柒2012代码
+ *
+ * 最好是用LinkedHashMap实现，内部默认支持LRU
  */
 public class LRU {
 
