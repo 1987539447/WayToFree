@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 /**
  * 构建责任链
  */
-public class HandlerChain implements Consumer<IWomen>{
+public class HandlerChain {
 
     private static Handler father = new Father();
     private static Handler husband = new Hunband();
@@ -22,8 +22,8 @@ public class HandlerChain implements Consumer<IWomen>{
         father.HandleMessage(women);
     }
 
-    @Override
+/*    @Override
     public void accept(IWomen women) {
         father.HandleMessage(women);
-    }
+    }*/
 }

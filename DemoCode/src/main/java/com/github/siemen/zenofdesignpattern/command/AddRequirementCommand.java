@@ -9,7 +9,7 @@ package com.github.siemen.zenofdesignpattern.command;
 public class AddRequirementCommand extends Command {
 
     public AddRequirementCommand(){
-        super(new RequirementGroup());
+        this(new RequirementGroup());
     }
 
     public AddRequirementCommand(Group group) {

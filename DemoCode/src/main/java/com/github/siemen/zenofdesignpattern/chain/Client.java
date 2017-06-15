@@ -17,7 +17,7 @@ public class Client {
         for (int i = 0; i < 5; i++) {
             womens.add(new Women(random.nextInt(4),"我要去逛街"));
         }
-        womens.stream().forEach(new HandlerChain());
+        womens.forEach(HandlerChain::handleMessage);
 /*        for (IWomen women : womens) {
             HandlerChain.handleMessage(women);
         }*/
