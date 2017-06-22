@@ -14,7 +14,7 @@ var viewBlog = new Vue({
     methods: {
         getBlog: function () {
             $.ajax({
-                url: "/blog?action=view&postId=3",
+                url: "/blog?action=view&postId=4",
                 success: function( result ) {
                     viewBlog.blog = JSON.parse(result);
                 }

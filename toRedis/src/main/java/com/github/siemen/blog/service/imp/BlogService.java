@@ -11,6 +11,8 @@ import com.github.siemen.blog.service.IBlogService;
 import com.github.siemen.util.Const;
 import redis.clients.jedis.Jedis;
 
+import java.util.Map;
+
 
 /**
  * 博客管理服务
@@ -22,7 +24,8 @@ public class BlogService implements IBlogService {
     private static final String REDIS_PASS = "siemen";
     private static final Jedis JEDIS = new Jedis(REDIS_HOST,REDIS_PORT);
     static {
-        JEDIS.auth(REDIS_PASS);
+        //JEDIS.auth(REDIS_PASS);
+        JEDIS.getClient().setSoTimeout(10000);
         JEDIS.select(1);
     }
 
@@ -59,12 +62,22 @@ public class BlogService implements IBlogService {
         return null;
     }
 
+/*
+第一版，通过json序列化存储内容
     @Override
     public MAV post(Blog blog) {
         long id = JEDIS.incr(Const.POST_COUNT);
         blog.setId(id);
         String key = "post:"+id+":data";
-        System.out.println(JSON.toJSONString(blog));
+        JEDIS.set(key, JSON.toJSONString(blog));
+        return new MAV("发布成功，文章ID："+id,Const.PAGE_MSG);
+    }*/
+
+    @Override
+    public MAV post(Blog blog) {
+        long id = JEDIS.incr(Const.POST_COUNT);
+        blog.setId(id);
+        String key = "post:"+id+":data";
         JEDIS.set(key, JSON.toJSONString(blog));
         return new MAV("发布成功，文章ID："+id,Const.PAGE_MSG);
     }

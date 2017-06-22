@@ -15,7 +15,7 @@ public class PostServer {
     private static final String REDIS_PASS = "siemen";
     private static final Jedis JEDIS = new Jedis(REDIS_HOST,REDIS_PORT);
     static {
-        JEDIS.auth(REDIS_PASS);
+        //JEDIS.auth(REDIS_PASS);
         JEDIS.select(1);
     }
 

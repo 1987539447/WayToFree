@@ -58,7 +58,6 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void response(MAV mav,HttpServletRequest request,HttpServletResponse response) throws IOException {
-        System.out.println(mav.getData());
         if(mav == null){
             return;
         }

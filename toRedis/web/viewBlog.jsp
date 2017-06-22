@@ -19,6 +19,6 @@
     内容：{{blog.content}}<br>
 </div>
 <a href="index.jsp">首页</a>
-<script src="script/viewBlog.js?_v=0.1" type="text/javascript"></script>
+<script src="script/viewBlog.js?_v=0.2" type="text/javascript"></script>
 </body>
 </html>
