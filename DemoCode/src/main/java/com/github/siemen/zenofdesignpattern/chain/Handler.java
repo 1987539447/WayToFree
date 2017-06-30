@@ -25,7 +25,7 @@ public abstract class Handler {
             this.response(women);
         }else{
             if(this.nextHandler != null){
-                this.nextHandler.nextHandler.HandleMessage(women);
+                this.nextHandler.HandleMessage(women);
             }else{
                 System.out.println("------没地方请示，按不同意处理------");
             }
