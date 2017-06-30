@@ -1,0 +1,30 @@
+#CAS
+Compare and Swap, 比较并交换。
+CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。
+通过Unsafe类调用JNI的代码，通过底层CPU指令实现：通过CPU锁保证操作的原子性（缓存锁或总线锁）
+
+#实现
+##
+atomic包下实现对集中基本类型的包装提供相关原子操作：自增，自减，原子增加
+AtomicInteger AtomicLong AtomicBoolean
+volatile基本类型来存储实际的数据值，并通过Unsafe类的compareAndSwapXxx-compareAndSwapInt来实现各种操作
+提供基本操作方法：compareAndSet，getAndIncrement i++，getAndDecrement i--，incrementAndGet ++i，decrementAndGet --i，addAndGet i+x
+除compareAndSet外，其他方法执行do{}while循环重试cas操作到成功
+基本类型原子数组AtomicIntegerArray,AtomicLongArray，提供对数组元素修改的原子操作
+##
+AtomicReference，实现对复杂类型的原子操作，通过底层的compareAndSwapObject实现
+AtomicStampedReference,AtomicMarkableReference 为AtomicReference的包装使用，通过内部封装的Pair保存一对变量（ref,boolean）或者（ref,int）
+##
+FieldUpdater
+提供原子化更新对象的某个volatile属性域：AtomicIntegerFieldUpdater，AtomicLongFieldUpdater,AtomicReferenceFieldUpdater
+其提供的的CAS操作保证较弱，无法保证其他使用者对属性域的直接修改
+均为抽象类，提供newUpdater工厂方法，传入class和属性域名；引用域更新器常用于对树形-链表等结构中节点中前后节点引用的更新
+基于反射和CAS操作实现对指定属性域的修改，引用类型通过底层的compareAndSwapObject实现
+##
+LongAdder,DoubleAdder，继承Striped64类
+在高并发情况下，CAS失败次数增多导致效率降低，LongAdder首先进行cas操作，如果失败则分散更新
+一个long数值拆分为多个long值的和，增加时任意增加其中一个值即可，降低并发冲突
+通过Striped64内部的Cell数组分散存储,transient volatile Cell[] cells;
+低并发时LongAdder和AtomicLong性能差不多，高并发时LongAdder更高效
+LongAccumulator,DoubleAccumulator 提供更通用版本，以类型为LongBinaryOperatorlambda表达式构建,可把当前结果和传入参数一起传给表达式进行计算
+

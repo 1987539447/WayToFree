@@ -11,9 +11,12 @@ import java.util.concurrent.*;
 /**
  * 通过CompletionServie渲染图片，针对下载完的图片立即渲染
  * 任务完成后备加入FutureQueue
+ *
+ * 限时加载广告，执行get时指定阻塞最大时长
  */
 public class Render {
 
+    private static final long TIME_BUDGET = 1000;
     private final ExecutorService executor;
 
     public Render(ExecutorService executor) {
@@ -57,5 +60,48 @@ public class Render {
 
     protected void renderImage(ImageData data) {
         System.out.println("-------image render-------");
+    }
+
+    Page renderPageWitAd() {
+
+
+        long endNanos = System.nanoTime() + TIME_BUDGET;
+        Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                //long wati
+                return "---add content---------";
+            }
+        });
+        Page page = renderBody();
+        long timeLeft = endNanos - System.nanoTime();
+        String ad = "default ad----";
+        try {
+            ad = future.get(timeLeft, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            ad = "defualt ad";
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            ad = "default ad";
+            future.cancel(true);
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        page.setAd(ad);
+        return page;
+
+    }
+
+    private Page renderBody() {
+        return null;
+    }
+
+    private class Page {
+        private String ad;
+
+        public void setAd(String ad) {
+            this.ad = ad;
+        }
     }
 }
