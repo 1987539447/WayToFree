@@ -1,0 +1,58 @@
+#########
+#Lock接口
+显示锁接口，提供普通的锁定lock()和解锁unlock()，限时获取锁tryLock(),可响应中断锁lockInterruptibly()
+#Condition接口
+等待特定条件接口，通过lock.newCondition（）创建，同一个lock可绑定多个不同条件。执行等待await()和通知signal()
+#Lock接口特定实现，通过内部AQS私有类实现
+ReentrantLock 可重入锁，RenentrantReadWriteLock 可重入读写锁。可重入：同一个线程对持有的同一把锁可重复进入。
+性能问题：当前JVM下synchronized和lock性能差不多，但synchronized可在后期版本提供持续优化
+############
+#AQS - AbstractQueuedSynchronizer
+抽象同步器实现，提供实现同步器的底层方法。
+内部提供一个FIFO的队列--CLH队列，双向链表，和一个原子化int状态域-state，
+提供state的获取修改方法，getState setState,compareAndSetState
+通过LockSupport处理线程的挂起和唤醒，内部通过ConditionObject实现Condition
+子类通过state的语义实现tryAcquire，tryRelease，tryAcquireShared，tryReleaseShared，isHeldExclusively
+被父类acquire release等方法调用,可根据需要实现公平或非公平锁
+调用序列：acquire||acquireShared--子类tryAcquire||tryAcquireShared--失败则入队列acquireQueued(独占或共享,当前线程信息)
+入队列实现：acquireQueued(addWaiter(Node))
+addWaiter--如果队列不为空，则尝试一次cas入队列，否则或失败则自旋尝试入队列
+acquireQueued--完成入队列后，如果前置为头结点（dummy结点），并且再次尝试获取锁成功，则将头结点设置为当前节点并返回中断标志，
+否则判断是否应该挂起并挂起线程，返回中断标志shouldParkAfterFailedAcquire
+判断：根据前置节点的waitstatus判断：如果为SIGNAL，即前置节点已经在等待则直接返回true，如果为取消则循环跳过已取消节点，并建立新的链接返回false，
+否则则CAS修改前置节点状态为SIGNAL
+
+######
+ReentrantLock中tryAcquire实现，其中state代表了同一个线程加锁的次数，内部有公平锁和非公平锁两种实现，均为独占模式
+#
+FairSync.tryAcquire--如果state=0并且没有等待时间更长的线程则执行cas更新state,并设置独占线程为当前线程，
+state不等于0但独占线程为当前线程，state计数加1，否则返回false
+#
+NoFairSync.tryAcquire实现类似，只是不去检测是否有其他等待线程
+#
+tryRelease 不区分公平和非公平
+Sync.tryRelease--必须为当前独占线程，更新state为state-acq，如果减后state=0，则完全释放
+#语义解析：
+lock() --- Sync.lock-- AQS.acquire(1)，针对非公平锁会先执行一次CAS尝试锁定在.
+unlock --- Sync.release--AQS.tryRealse(1)
+限时获取方法增加时间检测，可中断获取增加中断标志检测
+##########
+#Condition
+通过Lock.newCondition创建，公平性取决于lock。通过AQS内部类ConditionObject实现，维护一个自有的条件等待队列，节点仍然使用Node结构
+#await方法
+增加节点到条件队列，释放所持有的锁，park挂起并acquireQueued等待通知
+##ReentrantReadWriteLock实现
+并非Lock接口实现，而是ReadWriteLock接口实现Lock读和写两个视角。state拆分为高低16位，分别存储读和写锁重入数
+公平性：读锁不区分，读和写之间存在公平和非公平两种实现；
+重入性：获取写锁后可再获取读锁，反之不可以；
+锁可降级：写锁-获取读锁-释放写锁；不能升级
+写锁可使用条件变量，读锁不可以；读、写锁最大重入数65535
+#tryAcquire-独占，写锁获取实现：.
+读线程或写线程不为0（state !=0） 并且独占线程不为当前线程则失败进入等待
+否则,如需要阻塞当前线程(writerShouldBlock)并CAS更新state失败则返回false,不阻塞且更新成功，则设置当前独占线程；非公平锁总是不阻塞
+#tryAcquireShared-共享，读锁获取
+如果写线程持有并且独占线程不是当前线程则失败-1，否则：如果不需要阻塞并且CAS更新成功，执行计数加1，否则执行一次全面的获取，自旋尝试cas
+通过内部HoldCounter来存储当前线程持有的读锁计数，和线程绑定ThreadLocal，并持有线程ID
+
+
+
