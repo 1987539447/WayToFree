@@ -1,0 +1,26 @@
+<xml>
+    <!-- 搜索 /WEB-INF/shiro.ini; classpath下shiro.ini -->
+    <!-- 初始化 WebEnvironment实例-->
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+    </filter>
+
+    <filter-mapping>ShiroFilter</filter-mapping>
+    <filter-pattern>/*</filter-pattern>
+    <!-- 自定义 Envirionment-->
+    <context-param>
+        <param-name>shiroEnvironment</param-name>
+        <param-value>com.xxx.MyWebEnvironment</param-value>
+    </context-param>
+
+    <!-- 自定义ini文件位置 -->
+    <context-param>
+        <param-name>shiroConfigLocations</param-name>
+        <param-value>/xxx;file://xxx;classpath:xx</param-value>
+    </context-param>
+</xml>

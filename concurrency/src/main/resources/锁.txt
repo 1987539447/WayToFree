@@ -41,8 +41,9 @@ unlock --- Sync.release--AQS.tryRealse(1)
 通过Lock.newCondition创建，公平性取决于lock。通过AQS内部类ConditionObject实现，维护一个自有的条件等待队列，节点仍然使用Node结构
 #await方法
 增加节点到条件队列，释放所持有的锁，park挂起并acquireQueued等待通知
-##ReentrantReadWriteLock实现
-并非Lock接口实现，而是ReadWriteLock接口实现Lock读和写两个视角。state拆分为高低16位，分别存储读和写锁重入数
+################
+#ReentrantReadWriteLock实现
+并非Lock接口实现，而是ReadWriteLock接口实现Lock读和写两个视角。AQS中state拆分为高低16位，分别存储读和写锁重入数
 公平性：读锁不区分，读和写之间存在公平和非公平两种实现；
 重入性：获取写锁后可再获取读锁，反之不可以；
 锁可降级：写锁-获取读锁-释放写锁；不能升级

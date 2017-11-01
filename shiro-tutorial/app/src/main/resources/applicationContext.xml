@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id = "shiroFilter" class = "org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name = "securityManager" ref = "securityManager"/>
+        <!--应用默认url-->
+        <property name = "loginUrL" value = "/login.jsp"/>
+        <property name = "successUrl" value = "/home.jsp"/>
+        <property name = "unauthorizedUrl" value = "/unauthorized.jsp"/>
+        <!--filters属性非必需，filter定义会被自动加载，但可以在这里定义别名-->
+<!--        <property name = "filters">
+            <util:map>
+                <entry key = "anAlias" ref = "somFilters"></entry>
+            </util:map>
+        </property>-->
+        <property name = "filterChainDefinitions">
+            <value>
+                /admin/** = authc,roles[admin]
+                /doc/** = authc,roles[document:read]
+                /** = authc
+            </value>
+        </property>
+    </bean>
+    <!--自定义filter,会被shiroFilter获取并配置为filterChainDefinitions可用-->
+    <!--也可以手动添加到filter 映射-->
+    <bean id = "someFilter" class = "com.xxx.SomeFilter"></bean>
+    <bean id = "anotherFilter" class = "com.xxx.AnotherFilter"></bean>
+
+    <bean id = "securityManager" class = "org.apache.shiro.mgt.DefaultSecurityManager">
+        <!--配置单个或者多个realms-->
+        <!--默认使用 servlet容器session,如要使用shiro本地session,使用如下配置-->
+        <!--<property name = "sessionModd" value="native"/>-->
+    </bean>
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!--服务端验证数据源realms-->
+    <bean id = "myRealm" class="com.xxx.MyRealm"/>
+    <!--开启shiro注解，依赖lifecycleBeanPostProcessor-->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on = "lifecycleBeanPostProcessor"/>
+    <bean class = "org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name = "securityManager" ref = "securityManager"/>
+    </bean>
+
+    <!--支持spring remote-->
+    <!--服务端 插入executor到 实现的exporter-->
+    <bean id = "secureRemoteInvocationExecutor"
+          class = "org.apache.shiro.spring.remoting.SecureRemoteInvocationExecutor">
+        <property name = "securityManager" ref = "securityManager"/>
+    </bean>
+    <bean name = "/someService" class = "org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name = "service" ref = "someServcie"/>
+        <property name = "servcieInterface" value = "com.xxx.service.SomeService"/>
+        <property name = "remoteInvocationExecutor" ref = "secureRemoteInvocationExecutor"/>
+    </bean>
+
+    <!--客户端 配置invocationFactory到代理service-->
+    <bean id = "secureInvocationFactory" class = "org.apache.shiro.spring.remoting.SecureRemoteInvocationFactory"/>
+    <bean id = "someService" class = "org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+        <property name = "servcieUrl" value = "http://localhost:port/remoting/someService"/>
+        <property name = "servcieInterface" value = "com.xxx.service.SomeService"/>
+        <property name = "remoteInvocationFactory" ref = "secureInvocationFactory"/>
+    </bean>
+
+</beans>

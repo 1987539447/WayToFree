@@ -496,7 +496,7 @@ public class LinkedList<E>
     }
 
     /**
-     * 同上
+     * 同上，但是null时抛出异常
      */
     public E element() {
         return getFirst();

@@ -1,0 +1,29 @@
+基于AQS实现的集中同步器
+#######闭锁 CountDownLatch
+#
+内部Sync助手类实现AQS获取和释放方法语义。
+state语义：闭锁计数，必须大于0
+#
+await()--Sync.acquireSharedInterruptibly,语义实现tryAcquireShared---检查state是否为0,不为0则自旋等待
+countDown()--Sync.releaseShared,语义实现tryReleaseShared--state减1，当state==0时唤醒等待线程
+
+###### 循环栅栏 CyclicBarrier
+ #
+ 可循环使用的屏障栅栏，等地指定数量的线程到达屏障点，然后自动放开栅栏并恢复。用于将一个大批量的任务分解为多次小批量任务执行。
+ 内部使用ReentrantLock保障对计数的原子操作和同步，通过Condition.awati实现线程等待，通过内部Generation类保存同一批线程执行的中断状态。
+ 一批次线程要么全部完成，要么全部失败；任意一个线程抛出中断异常则整个批次失败。
+ #构建方法 CyclicBarrier(int count,Runable action)
+ 构建时指定需要等待到达屏障点的线程数量，同时可传入一个条件满足时执行的动作
+ #等待方法 await
+ 获取锁--检查是否其他线程中断或者自身中断；-- 屏障计数减1，并作为索引后面返回；---如果到达屏障点(index==0)，如果存在触发动作则执行，唤醒等待线程并重置屏障nextGeneration
+ ---未到达屏障点，循环并在condition等待唤醒 ---释放锁 -- 过程中抛出中断异常则breakBarrier设置屏障失效，唤醒等待线程并重置
+
+####### 信号量 Semaphore
+#
+计数信号量，通过aqcuire获取一个信号量，获取不到则阻塞，通过release释放一个信号量。不使用具体许可对象，仅对许可号计数
+基于AQS的state实现可用信号量的语义，内部有公平和非公平两种实现，只用共享模式。
+信号量数为1用作互斥锁，成为二进制信号量
+#acquire 获取许可
+acquire--Sync.acquireSharedInterruptibly(1)--tryAcquireShared||公平和非公平两种实现
+公平锁会先检查CLH队列是否有其他线程-非本线程在排队--没有时再去获取许可，非公平锁直接尝试获取许可；
+许可获取--检查可用许可与请求许可数，并CAS设置剩余许可数
