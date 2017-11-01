@@ -356,8 +356,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * 根据hash和表长度计算索引：(length -1) & hash
      * 参数：
      * hash-key的hash值，key-value，存储数据，
-     * onlyIfAbsent 有值时是否修改，true不修改，默认put时为false
-     * evict??
+     * onlyIfAbsent 是否仅不存在时保存，true 不修改原值，返回原值，默认put时为false，更新
+     * evict 是否删除最老的数据，HashMap中没实现，在LinkedHashMap实现
      */
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
@@ -408,7 +408,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * 初始化或扩大（2倍）存储表
-     *
+     * -达到最大值时不允许扩充
+     * -已经初始化的，扩容两倍
+     * -数据逐个拷贝
      * @return the table
      */
     final Node<K,V>[] resize() {
