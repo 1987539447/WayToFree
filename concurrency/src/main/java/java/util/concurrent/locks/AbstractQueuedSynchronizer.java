@@ -442,7 +442,7 @@ public abstract class AbstractQueuedSynchronizer
 
         /**
          * status域可取的值
-         * SIGNAL：当前节点的后续节点为阻塞或将要阻塞（通过park方法），必须唤醒后续几点。为避免竞争acquire方法必须先获得一个通知然后尝试获取
+         * SIGNAL：当前节点的后续节点为阻塞或将要阻塞（通过park方法），必须唤醒后续节点。为避免竞争acquire方法必须先获得一个通知然后尝试获取
          * CANCELLED 因超时或中断取消
          * CONDITION 等待某个条件
          * PROPAGATE 传播，releaseShared应该传播给其他节点
